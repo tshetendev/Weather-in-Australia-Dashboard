@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australian Weather Analysis Dashboard</title>
+    <!-- Bokeh and Plotly Libraries -->
+    <script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.css" type="text/css">
+    
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+    <!-- Custom CSS for Sidebar and Hamburger Icon -->
+    <!-- JavaScript for Sidebar Collapse -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('collapsed');
+        }
+    </script>
+     <title>Rainfall Data</title>
+     {{ script|safe }} <!-- Ensure the Bokeh script is included -->
+</head>
+<body>
+    <!-- Hamburger Icon -->
+    <div class="hamburger" onclick="toggleSidebar()">&#9776;</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Research Questions</h2>
+        <ul>
+            <li><a href="#extreme-weather">Frequency of Extreme Weather Events</a></li>
+            <li><a href="#humidity-rainfall">Humidity and Rainfall Correlation</a></li>
+            <li><a href="#annual-rainfall">Trend in Average Annual Rainfall</a></li>
+            <li><a href="#temp-rainfall-correlation">Max Temp and Rainfall Correlation</a></li>
+            <li><a href="#rain-predictors">Predictors of Rain Tomorrow</a></li>
+        </ul>
+    </div>
+ 
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Australian Weather Analysis Dashboard</h1>
+        <!-- Temperature and Rainfall Distribution Section -->
+        <div id="extreme-weather"class="section">
+            <h2>• Has the frequency of extreme weather events (e.g., high temperatures, heavy rainfall) increased in Australia over the last 10 years?</h2>
+            <h3>Temperature and Rainfall Distribution with 95th Percentile Thresholds</h3>
+                <div>
+                    <!-- Render the Plotly graph here -->
+                    {{ graph_html | safe }}
+                </div>
+        </div>
+
+        <!-- Extreme Weather Events Plot Section -->
+        <div id="extreme-weather" class="section">
+            <h3>Extreme Weather Events in Australia (Last 10 Years)</h3>
+            <div>
+                <!-- Render the Plotly graph here -->
+                {{ graph_html2 | safe }}
+            </div>
+         
+        </div>
+    
+        <!-- Humidity vs Rainfall Section -->
+        <div id="humidity-rainfall" class="section">
+            <h2>• How does humidity affect the occurrence of rain in different regions of Australia?</h2>
+            <div>{{ plotly_heatmap|safe }}</div>
+            
+            <!-- Dropdown to select location -->
+            <form method="POST">
+                <label for="location">Select Location:</label>
+                <select name="location" id="location">
+                    {% for location in locations %}
+                        <option value="{{ location }}" {% if location == selected_location %}selected{% endif %}>{{ location }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Show Graph</button>
+            </form>
+            
+            <!-- Humidity vs Rainfall Scatter Plot -->
+            <h3>Humidity vs Rainfall in {{ selected_location }}</h3>
+            <div id="scatter-plot">{{ plotly_scatter|safe }}</div>
+        </div>
+
+        
+        <!-- Average Annual Rainfall Section -->
+        <div id="annual-rainfall" class="section">
+            <h2>• What is the trend in average annual rainfall across various Australian regions over the past decade?</h2>
+            <div class="plot-container">{{ script_bokeh_plott|safe }} {{ div_bokeh_plott|safe }}</div>
+        </div>
+        
+        <div id="annual-rainfall-plot" class="section">
+            <h2>• What is the trend in average annual rainfall across various Australian regions over the past decade?</h2>
+            
+            <!-- Dropdown for year selection -->
+            <form method="post">
+                <label for="year">Select Year:</label>
+                <select name="year" id="year">
+                    {% for y in years %}
+                        <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Show Data</button>
+            </form>
+            
+            <div class="plot-container">{{ div|safe }}</div>  <!-- And the div container -->
+        </div>
+        
+
+        <!-- Max Temp and Rainfall Correlation Section -->
+        <div id="temp-rainfall-correlation" class="section">
+            <h2>• Is there a significant correlation between maximum temperature and rainfall in different Australian cities?</h2>
+            <div id="correlation-plot">
+                <!-- Render the plot HTML here -->
+                {{ plot_html|safe }}
+            </div>
+        </div>
+
+        <!-- Rain Predictors Section -->
+        <div id="rain-predictors" class="section">
+            <h2>• What are the most significant predictors of whether it will rain tomorrow?</h2>
+            <div>
+                <!-- Embed the Plotly graph -->
+                {{ graph_html3|safe }}
+            </div>
+    
+        </div>
+    </div>
+</body>
+</html>
